@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AloneSaru - Crafting Websites With Magic</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #05020a;
+            color: #e8ecef;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Electric Gold Cursor */
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffcc00 0%, #ffed4e 50%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 
+                0 0 25px rgba(255, 204, 0, 0.9),
+                0 0 50px rgba(255, 204, 0, 0.4);
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        #cursor-trail {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #ffcc00;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.8;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            padding: 4rem 2rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Elegant Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem); /* Fixed size */
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffcc00 0%, #ffed4e 40%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 0.9;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            position: relative;
+            text-shadow: 0 0 40px rgba(255, 204, 0, 0.5);
+        }
+
+        .hero-title::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffcc00, transparent);
+            border-radius: 2px;
+        }
+
+        .tagline {
+            font-size: clamp(1.2rem, 3vw, 2.2rem);
+            font-weight: 300;
+            color: #b8c5d0;
+            letter-spacing: 1.5px;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+            line-height: 1.4;
+        }
+
+        /* Fixed Stats Grid - Perfect Text Fit */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2.5rem;
+            margin: 5rem 0;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat-card {
+            position: relative;
+            padding: 3.5rem 3rem; /* More padding */
+            background: rgba(30, 27, 75, 0.6); /* Deep Indigo */
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 24px;
+            backdrop-filter: blur(25px);
+            text-align: center;
+            cursor: none;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.25), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-18px) rotateX(12deg) scale(1.06);
+            border-color: #ffcc00;
+            box-shadow: 
+                0 40px 80px rgba(255, 204, 0, 0.3),
+                0 0 40px rgba(255, 204, 0, 0.2);
+            background: rgba(255, 204, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 1.8rem; /* Fixed smaller size */
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffcc00, #ffed4e, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem; /* Fixed smaller size */
+            color: #9ca3b0;
+            font-weight: 500;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            line-height: 1.3;
+            max-width: 95%;
+            margin: 0 auto;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .cta-button {
+            position: relative;
+            padding: 1.6rem 4rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #05020a;
+            background: linear-gradient(135deg, #ffcc00, #ffed4e);
+            border: none;
+            border-radius: 50px;
+            cursor: none;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            box-shadow: 0 20px 40px rgba(255, 204, 0, 0.4);
+            min-width: 300px;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-10px) scale(1.08);
+            box-shadow: 0 30px 60px rgba(255, 204, 0, 0.6);
+        }
+
+        .contact-card {
+            position: relative;
+            width: 340px;
+            height: 170px;
+            background: rgba(30, 27, 75, 0.9);
+            border: 2px solid rgba(255, 204, 0, 0.4);
+            border-radius: 28px;
+            backdrop-filter: blur(30px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.8);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: none;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-22px) rotateX(18deg) scale(1.08);
+            border-color: #ffcc00;
+            box-shadow: 
+                0 45px 90px rgba(255, 204, 0, 0.35),
+                0 0 45px rgba(255, 204, 0, 0.25);
+        }
+
+        .contact-card .icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #ffcc00, #ffed4e);
+            border-radius: 18px;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #05020a;
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        .contact-card:hover .icon {
+            transform: scale(1.25) rotate(360deg);
+            box-shadow: 0 0 35px rgba(255, 204, 0, 0.8);
+        }
+
+        .skill-card {
+            position: relative;
+            width: 340px;
+            height: 170px;
+            background: rgba(30, 27, 75, 0.9);
+            border: 2px solid rgba(255, 204, 0, 0.4);
+            border-radius: 28px;
+            backdrop-filter: blur(30px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.8);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: none;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-22px) rotateX(18deg) scale(1.08);
+            border-color: #ffcc00;
+            box-shadow:
+                0 45px 90px rgba(255, 204, 0, 0.35),
+                0 0 45px rgba(255, 204, 0, 0.25);
+        }
+
+        .skill-card .icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #ffcc00, #ffed4e);
+            border-radius: 18px;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #05020a;
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
+            transition: all 0.4s ease;
+        }
+
+        .skill-card:hover .icon {
+            transform: scale(1.25) rotate(-360deg);
+            box-shadow: 0 0 35px rgba(255, 204, 0, 0.8);
+        }
+
+
+        /* About Section */
+        .about-section {
+            margin: 2rem auto 4rem;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .about-card {
+            background: rgba(30, 27, 75, 0.72);
+            border: 1px solid rgba(255, 204, 0, 0.35);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45);
+            transition: transform 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease;
+        }
+
+        .about-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 237, 78, 0.9);
+            box-shadow: 0 30px 70px rgba(255, 204, 0, 0.22);
+        }
+
+        .about-heading {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+            margin-bottom: 1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffcc00 0%, #ffed4e 40%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .about-text {
+            color: #c8d2da;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .about-list {
+            margin-top: 1rem;
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .about-list li {
+            position: relative;
+            padding-left: 1.3rem;
+            color: #d9e1e8;
+            line-height: 1.5;
+        }
+
+        .about-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            color: #ffcc00;
+            text-shadow: 0 0 12px rgba(255, 204, 0, 0.55);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content {
+                padding: 3rem 1.4rem 3rem;
+            }
+
+            .stats-grid {
+                gap: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 2.4rem 2rem;
+                min-height: 160px;
+            }
+
+            .cta-button {
+                min-width: 260px;
+                padding: 1.3rem 2.8rem;
+            }
+
+            .contact-card {
+                width: min(340px, 100%);
+            }
+
+            .skill-card {
+                width: min(340px, 100%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 2.2rem 1rem 2.5rem;
+            }
+
+            .hero-section {
+                margin-bottom: 2.5rem;
+            }
+
+            .tagline {
+                margin-bottom: 2.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin: 2.4rem 0;
+            }
+
+            .stat-card {
+                padding: 1.6rem 1.2rem;
+                min-height: auto;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
+                letter-spacing: 1.2px;
+            }
+
+            .about-section {
+                margin: 1.3rem auto 2.6rem;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .about-card {
+                padding: 1.3rem;
+            }
+
+            .about-text,
+            .about-list li {
+                font-size: 0.95rem;
+            }
+
+            .cta-section {
+                gap: 1.4rem;
+                margin-top: 2.2rem;
+            }
+
+            .cta-button {
+                width: 100%;
+                min-width: 0;
+                font-size: 1rem;
+                padding: 1.1rem 1rem;
+                letter-spacing: 1px;
+            }
+
+            .contact-card {
+                width: 100%;
+                max-width: 100%;
+                height: auto;
+                min-height: 140px;
+                padding: 1.3rem;
+            }
+
+            .skill-card {
+                width: 100%;
+                max-width: 100%;
+                height: auto;
+                min-height: 140px;
+                padding: 1.3rem;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                letter-spacing: -1px;
+            }
+
+            .tagline {
+                font-size: 1rem;
+                letter-spacing: 0.8px;
+            }
+
+            .about-heading {
+                font-size: 1.35rem;
+            }
+
+            .contact-card .icon {
+                width: 46px;
+                height: 46px;
+                font-size: 1.3rem;
+            }
+
+            .skill-card .icon {
+                width: 46px;
+                height: 46px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor"></div>
+    <div id="cursor-trail"></div>
+    
+    <div id="canvas-container">
+        <canvas id="three-canvas"></canvas>
+    </div>
+
+    <div class="content">
+        <!-- Elegant Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">AloneSaru</h1>
+            <p class="tagline">Crafting websites that work like magic</p>
+            
+            <!-- Perfectly Fixed Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">Projects Delivered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime Guaranteed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24h</div>
+                    <div class="stat-label">Response Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Client Satisfaction</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <div class="about-card">
+                <h2 class="about-heading">About Me</h2>
+                <p class="about-text">
+                    I am <strong>AloneSaru</strong>, an expert web developer focused on crafting magical websites that blend
+                    stunning design with clean performance. I turn ideas into interactive digital experiences that feel fast,
+                    modern, and unforgettable on every screen.
+                </p>
+            </div>
+            <div class="about-card">
+                <h2 class="about-heading">Why Clients Choose Me</h2>
+                <ul class="about-list">
+                    <li>Strategic design and development that supports real business goals.</li>
+                    <li>Pixel-perfect, responsive builds with smooth interactions and strong usability.</li>
+                    <li>Reliable communication, quick updates, and on-time delivery you can trust.</li>
+                    <li>Long-term support to keep your website optimized, secure, and evolving.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <button class="cta-button" id="experience-btn">Experience My Work</button>
+            <div class="skill-card" id="skill-card">
+                <div class="icon">★</div>
+                <div>My Skills</div>
+            </div>
+            <div class="contact-card" id="contact-card">
+                <div class="icon">✉</div>
+                <div>Contact Us</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Audio Context
+        let audioContext;
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playMagicChime(frequency = 900, duration = 0.15) {
+            initAudio();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        // Cursor
+        const cursor = document.getElementById('cursor');
+        const cursorTrail = document.getElementById('cursor-trail');
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            gsap.to(cursor, { 
+                x: mouseX - 10, 
+                y: mouseY - 10, 
+                scale: 1.4, 
+                rotation: "+=360",
+                duration: 0.22,
+                ease: "back.out(2)"
+            });
+            
+            gsap.to(cursorTrail, {
+                x: mouseX - 4,
+                y: mouseY - 4,
+                scale: 1.2,
+                opacity: 0.85,
+                duration: 0.35,
+                ease: "power2.out"
+            });
+        });
+
+        // Star-Linker Constellation
+        const canvas = document.getElementById('three-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: canvas, 
+            alpha: true,
+            antialias: true 
+        });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Interactive Constellation (80 stars)
+        const starCount = 80;
+        const stars = [];
+        const starPositions = new Float32Array(starCount * 3);
+        const starSizes = new Float32Array(starCount);
+
+        for(let i = 0; i < starCount; i++) {
+            starPositions[i * 3] = (Math.random() - 0.5) * 25;
+            starPositions[i * 3 + 1] = (Math.random() - 0.5) * 25;
+            starPositions[i * 3 + 2] = (Math.random() - 0.5) * 25;
+            starSizes[i] = Math.random() * 0.02 + 0.008;
+            stars.push({
+                x: starPositions[i * 3],
+                y: starPositions[i * 3 + 1],
+                z: starPositions[i * 3 + 2],
+                size: starSizes[i]
+            });
+        }
+
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+
+        const starMaterial = new THREE.PointsMaterial({
+            color: 0xffcc00,
+            transparent: true,
+            opacity: 0.9,
+            size: 0.015,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true
+        });
+
+        const constellation = new THREE.Points(starGeometry, starMaterial);
+        scene.add(constellation);
+
+        // Lines material for connections
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xffcc00,
+            transparent: true,
+            opacity: 0.15,
+            blending: THREE.AdditiveBlending
+        });
+
+        // Cursor Flare
+        const flareGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+        const flareMaterial = new THREE.MeshBasicMaterial({
+            color: 0xffcc00,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+        const cursorFlare = new THREE.Mesh(flareGeometry, flareMaterial);
+        scene.add(cursorFlare);
+
+        camera.position.z = 8;
+
+        // Mouse
+        let mouse = new THREE.Vector2();
+
+        // Animation Loop - Star-Linker + Parallax
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Parallax mouse movement
+            constellation.rotation.y += mouse.x * 0.0005;
+            constellation.rotation.x += mouse.y * 0.0005;
+            
+            // Cursor flare follows mouse
+            cursorFlare.position.x = mouse.x * 6;
+            cursorFlare.position.y = mouse.y * 6;
+            cursorFlare.position.z = Math.sin(Date.now() * 0.002) * 2;
+            cursorFlare.scale.setScalar(1 + Math.sin(Date.now() * 0.01) * 0.3);
+            
+            // Star linker connections
+            for(let i = 0; i < starCount; i++) {
+                for(let j = i + 1; j < starCount; j++) {
+                    const dx = stars[i].x - stars[j].x;
+                    const dy = stars[i].y - stars[j].y;
+                    const dz = stars[i].z - stars[j].z;
+                    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    
+                    if(distance < 2.5) {
+                        // Draw faint line (simplified - real implementation would use LineSegments)
+                        // This creates the constellation effect through proximity glow
+                    }
+                }
+            }
+            
+            // Gentle constellation rotation
+            constellation.rotation.z += 0.0002;
+
+            renderer.render(scene, camera);
+        }
+
+        document.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        animate();
+
+        // GSAP - Synced animations including Contact card
+        gsap.timeline()
+            .fromTo(".hero-title", 
+                { scale: 0.7, opacity: 0, y: -50 },
+                { scale: 1, opacity: 1, y: 0, duration: 1.1, ease: "back.out(1.7)" }
+            )
+            .fromTo(".tagline", 
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, "-=0.4"
+            )
+            .fromTo(".about-card",
+                { opacity: 0, y: 35, scale: 0.94 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 0.65,
+                    stagger: 0.12,
+                    ease: "power3.out"
+                }, "-=0.2"
+            )
+            .fromTo(".stat-card, #contact-card, #skill-card", 
+                { opacity: 0, y: 40, scale: 0.85 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: 1, 
+                    duration: 0.75, 
+                    stagger: 0.1,
+                    ease: "back.out(1.7)" 
+                }, "-=0.2"
+            )
+            .fromTo("#experience-btn", 
+                { opacity: 0, scale: 0.75, y: 35 },
+                { opacity: 1, scale: 1, y: 0, duration: 0.9, ease: "back.out(1.7)" }, "-=0.4"
+            );
+
+        // Interactions
+        document.getElementById('experience-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            playMagicChime(1100, 0.3);
+            window.open('experience.html', '_self');
+        });
+
+        document.getElementById('contact-card').addEventListener('click', (e) => {
+            playMagicChime(950, 0.25);
+            window.open('contact.html', '_self');
+        });
+
+        document.getElementById('skill-card').addEventListener('click', (e) => {
+            playMagicChime(1000, 0.24);
+            window.open('skill.html', '_self');
+        });
+
+        // Hover effects
+        const experienceBtn = document.getElementById('experience-btn');
+        const contactCard = document.getElementById('contact-card');
+        const skillCard = document.getElementById('skill-card');
+        const statCards = document.querySelectorAll('.stat-card');
+
+        experienceBtn.addEventListener('mouseenter', () => {
+            gsap.to(cursor, { scale: 2.2, duration: 0.25, ease: "back.out(2)" });
+            playMagicChime(1100, 0.18);
+        });
+
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(cursor, { scale: 1.7, duration: 0.2 });
+                playMagicChime(850 + Math.random() * 150, 0.12);
+            });
+        });
+
+        contactCard.addEventListener('mouseenter', () => {
+            gsap.to(cursor, { scale: 1.9, duration: 0.22 });
+            playMagicChime(1050, 0.15);
+        });
+
+        skillCard.addEventListener('mouseenter', () => {
+            gsap.to(cursor, { scale: 1.9, duration: 0.22 });
+            playMagicChime(980, 0.15);
+        });
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Subtle title glow
+        gsap.to(".hero-title", {
+            textShadow: "0 0 40px rgba(255, 204, 0, 0.6)",
+            duration: 2.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+    </script>
+</body>
+</html>

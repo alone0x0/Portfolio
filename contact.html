@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AloneSaru - Contact Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 1.2rem;
+            color: #eef3ff;
+            background:
+                radial-gradient(circle at 14% 15%, rgba(149, 103, 255, 0.22), transparent 38%),
+                radial-gradient(circle at 84% 8%, rgba(94, 54, 207, 0.3), transparent 36%),
+                linear-gradient(145deg, #070312 0%, #12052a 46%, #090218 100%);
+        }
+
+        .contact-section {
+            width: min(900px, 100%);
+            border-radius: 24px;
+            border: 1px solid rgba(162, 122, 255, 0.45);
+            background: rgba(14, 6, 35, 0.9);
+            box-shadow:
+                0 28px 70px rgba(0, 0, 0, 0.62),
+                0 0 0 1px rgba(180, 142, 255, 0.14) inset;
+            padding: clamp(1.2rem, 3vw, 2.1rem);
+        }
+
+        .contact-title {
+            font-size: clamp(2rem, 5.4vw, 3rem);
+            font-weight: 900;
+            margin-bottom: 0.7rem;
+            background: linear-gradient(135deg, #d5b8ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .contact-text {
+            color: #dbe5ff;
+            line-height: 1.65;
+            font-size: clamp(1rem, 2.2vw, 1.18rem);
+            margin-bottom: 1.4rem;
+            max-width: 90%;
+        }
+
+        .contact-container {
+            position: relative;
+            border-radius: 18px;
+            border: 1px solid rgba(178, 141, 255, 0.42);
+            background: linear-gradient(150deg, rgba(48, 22, 98, 0.9), rgba(23, 9, 50, 0.96));
+            padding: clamp(1rem, 2.5vw, 1.4rem);
+            overflow: hidden;
+        }
+
+        .contact-container::before {
+            content: '';
+            position: absolute;
+            inset: -40% -20%;
+            background: linear-gradient(120deg, transparent 30%, rgba(180, 142, 255, 0.2) 50%, transparent 70%);
+            transform: translateX(-60%);
+            animation: containerSweep 6s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        .cta-row {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 0.9rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .whatsapp-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0.9rem 1.35rem;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #05240f;
+            background: linear-gradient(135deg, #38ff9d, #8bffbe);
+            cursor: pointer;
+            box-shadow:
+                0 12px 28px rgba(56, 255, 157, 0.33),
+                0 0 18px rgba(56, 255, 157, 0.45);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            filter: brightness(1.04);
+            box-shadow:
+                0 18px 32px rgba(56, 255, 157, 0.4),
+                0 0 24px rgba(56, 255, 157, 0.55);
+        }
+
+        .number-reveal {
+            position: relative;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            border-radius: 12px;
+            border: 1px solid rgba(57, 255, 160, 0.34);
+            background: rgba(3, 24, 13, 0.58);
+            padding: 0.7rem 0.95rem;
+            color: #95ffcb;
+            font-family: Consolas, 'Courier New', monospace;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            overflow: hidden;
+            min-width: min(100%, 320px);
+        }
+
+        .number-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.32s ease, transform 0.32s ease;
+        }
+
+        .number-reveal::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(94, 255, 179, 0.32), transparent);
+            transform: translateX(-100%);
+            pointer-events: none;
+        }
+
+        .number-reveal.scanning::before {
+            animation: scanPulse 0.9s ease-in-out 2;
+        }
+
+        @keyframes containerSweep {
+            0% { transform: translateX(-55%); }
+            100% { transform: translateX(35%); }
+        }
+
+        @keyframes scanPulse {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(120%); }
+        }
+    </style>
+</head>
+<body>
+    <section class="contact-section">
+        <h1 class="contact-title">Contact Us</h1>
+        <p class="contact-text">If you want to make websites or any application, contact us.</p>
+
+        <div class="contact-container">
+            <div class="cta-row">
+                <button class="whatsapp-btn" id="show-number-btn" type="button">Reveal WhatsApp Contact</button>
+                <div class="number-reveal" id="number-reveal" aria-live="polite"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const showBtn = document.getElementById('show-number-btn');
+        const revealBox = document.getElementById('number-reveal');
+        const finalNumber = '+880 1907344069';
+
+        let revealTimer;
+        function animateTechReveal() {
+            clearInterval(revealTimer);
+            revealBox.classList.add('visible', 'scanning');
+
+            const chars = '01#@*%$ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let frame = 0;
+            const maxFrames = 22;
+
+            revealTimer = setInterval(() => {
+                const progress = frame / maxFrames;
+                let output = '';
+
+                for (let i = 0; i < finalNumber.length; i++) {
+                    const lockPoint = (i + 1) / finalNumber.length;
+                    if (progress >= lockPoint || finalNumber[i] === ' ') {
+                        output += finalNumber[i];
+                    } else {
+                        output += chars[Math.floor(Math.random() * chars.length)];
+                    }
+                }
+
+                revealBox.textContent = 'WHATSAPP: ' + output;
+                frame++;
+
+                if (frame > maxFrames) {
+                    clearInterval(revealTimer);
+                    revealBox.textContent = 'WHATSAPP: ' + finalNumber;
+                    setTimeout(() => revealBox.classList.remove('scanning'), 350);
+                }
+            }, 34);
+        }
+
+        showBtn.addEventListener('click', animateTechReveal);
+    </script>
+</body>
+</html>

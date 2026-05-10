@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AloneSaru - Skills</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(147, 109, 255, 0.18), transparent 42%),
+                radial-gradient(circle at 85% 10%, rgba(110, 69, 255, 0.22), transparent 40%),
+                linear-gradient(145deg, #080313 0%, #130529 48%, #090216 100%);
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .skills-wrapper {
+            width: min(960px, 100%);
+            background: rgba(15, 7, 35, 0.9);
+            border: 1px solid rgba(151, 110, 255, 0.42);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            box-shadow:
+                0 35px 80px rgba(0, 0, 0, 0.62),
+                0 0 0 1px rgba(176, 137, 255, 0.22) inset;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffcc00 0%, #ffed4e 40%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #d0d9e8;
+            margin-bottom: 1.8rem;
+            line-height: 1.6;
+        }
+
+        .skills-carousel {
+            position: relative;
+            display: grid;
+            grid-template-columns: 56px 1fr 56px;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 0.4rem;
+        }
+
+        .carousel-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 204, 0, 0.5);
+            background: rgba(255, 216, 90, 0.1);
+            color: #ffe678;
+            font-size: 1.8rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+        }
+
+        .carousel-btn:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 237, 78, 0.9);
+            background: rgba(255, 204, 0, 0.22);
+            color: #fff8d8;
+            box-shadow:
+                0 12px 24px rgba(255, 204, 0, 0.26),
+                0 0 20px rgba(255, 221, 113, 0.45);
+        }
+
+        .carousel-btn:focus-visible {
+            outline: 2px solid #ffed4e;
+            outline-offset: 2px;
+        }
+
+        .skill-box {
+            position: relative;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 18px;
+            background: linear-gradient(155deg, rgba(30, 18, 60, 0.85), rgba(13, 7, 30, 0.95));
+            min-height: 210px;
+            padding: 1.4rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: visible;
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.42);
+        }
+
+        .skill-box::before {
+            content: '';
+            position: absolute;
+            inset: -30% -40%;
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                transparent 34%,
+                rgba(164, 125, 255, 0.24) 48%,
+                rgba(120, 86, 255, 0.36) 52%,
+                transparent 66%,
+                transparent 100%
+            );
+            opacity: 0;
+            transform: translateX(-36%);
+            transition: opacity 0.45s ease;
+            pointer-events: none;
+        }
+
+        .skill-box::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            border-radius: 16px;
+            background: linear-gradient(150deg, rgba(24, 12, 49, 0.94), rgba(9, 4, 22, 0.96));
+            pointer-events: none;
+        }
+
+        .skill-box:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: rgba(167, 128, 255, 0.95);
+            box-shadow:
+                0 22px 45px rgba(0, 0, 0, 0.58),
+                0 0 22px rgba(168, 130, 255, 0.4),
+                0 0 42px rgba(121, 87, 255, 0.28);
+        }
+
+        .skill-box:hover::before {
+            opacity: 1;
+            animation: shimmerSweep 1.8s cubic-bezier(0.32, 0, 0.2, 1) infinite alternate;
+        }
+
+        .skill-box.is-transitioning {
+            border-color: rgba(167, 128, 255, 0.95);
+            box-shadow:
+                0 24px 48px rgba(0, 0, 0, 0.62),
+                0 0 28px rgba(168, 130, 255, 0.42),
+                0 0 54px rgba(121, 87, 255, 0.32);
+        }
+
+        .skill-box.is-transitioning::before {
+            opacity: 1;
+            animation: shimmerSweep 1.15s cubic-bezier(0.32, 0, 0.2, 1) infinite alternate;
+        }
+
+        .skill-content {
+            position: relative;
+            z-index: 2;
+            max-width: 95%;
+        }
+
+        .skill-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #ffe27e;
+            margin-bottom: 0.55rem;
+        }
+
+        .skill-title {
+            font-weight: 800;
+            font-size: clamp(1.45rem, 2.8vw, 2rem);
+            margin-bottom: 0.55rem;
+            color: #fff7cc;
+            text-shadow: 0 0 12px rgba(255, 220, 110, 0.22);
+        }
+
+        .skill-text {
+            color: #e4eaf2;
+            font-size: clamp(0.92rem, 1.7vw, 1.05rem);
+            line-height: 1.6;
+        }
+
+        .case-study-popup {
+            position: absolute;
+            top: calc(100% + 1rem);
+            left: 50%;
+            transform: translate(-50%, 14px) scale(0.96);
+            width: min(460px, 94vw);
+            background: rgba(7, 3, 20, 0.94);
+            border: 1px solid rgba(66, 255, 160, 0.45);
+            border-radius: 16px;
+            padding: 0.95rem;
+            box-shadow:
+                0 20px 44px rgba(0, 0, 0, 0.6),
+                0 0 24px rgba(66, 255, 160, 0.22);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.32s ease, transform 0.32s ease;
+            z-index: 20;
+        }
+
+        .case-study-popup.show {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .case-heading {
+            font-size: 0.83rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #7effc4;
+            margin-bottom: 0.7rem;
+        }
+
+        .case-diagram {
+            position: relative;
+            height: 200px;
+            border: 1px solid rgba(88, 255, 171, 0.28);
+            border-radius: 12px;
+            background: linear-gradient(145deg, rgba(20, 11, 45, 0.94), rgba(8, 4, 22, 0.98));
+            overflow: hidden;
+        }
+
+        .case-diagram svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glow-link {
+            fill: none;
+            stroke: rgba(70, 255, 166, 0.85);
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px rgba(70, 255, 166, 0.8));
+            stroke-dasharray: 10 9;
+            animation: flowPath 2.2s linear infinite;
+        }
+
+        .node {
+            position: absolute;
+            width: 38%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(95, 255, 176, 0.38);
+            border-radius: 10px;
+            padding: 0.45rem;
+            backdrop-filter: blur(6px);
+            z-index: 2;
+        }
+
+        .node small {
+            display: block;
+            color: #7fffc8;
+            font-size: 0.65rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .node p {
+            color: #eef3fa;
+            font-size: 0.72rem;
+            line-height: 1.35;
+        }
+
+        .node.challenge { top: 12px; left: 10px; }
+        .node.strategy { top: 78px; left: 30%; width: 40%; }
+        .node.solution { bottom: 12px; right: 10px; }
+
+        .actions {
+            margin-top: 1.7rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0.8rem 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn-primary {
+            color: #05020a;
+            background: linear-gradient(135deg, #ffcc00, #ffed4e);
+            box-shadow: 0 16px 26px rgba(255, 204, 0, 0.28);
+        }
+
+        .btn-secondary {
+            color: #ffde59;
+            background: rgba(255, 204, 0, 0.12);
+            border: 1px solid rgba(255, 204, 0, 0.45);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+
+        @keyframes shimmerSweep {
+            0% {
+                transform: translateX(-40%);
+            }
+            100% {
+                transform: translateX(40%);
+            }
+        }
+
+        @keyframes flowPath {
+            to {
+                stroke-dashoffset: -38;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .skills-wrapper {
+                padding: 1.4rem;
+            }
+
+            .skills-carousel {
+                grid-template-columns: 44px 1fr 44px;
+                gap: 0.6rem;
+            }
+
+            .carousel-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.35rem;
+            }
+
+            .skill-box {
+                min-height: 190px;
+                padding: 1.15rem 0.95rem;
+            }
+
+            .case-study-popup {
+                top: calc(100% + 0.7rem);
+                width: min(420px, 96vw);
+            }
+
+            .case-diagram {
+                height: 215px;
+            }
+
+            .node {
+                width: 44%;
+            }
+
+            .node.strategy {
+                left: 28%;
+                width: 44%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="skills-wrapper">
+        <h1>My Skills</h1>
+        <p class="subtitle">
+            A quick view of the core technologies and strengths I use to build clean, reliable, and high-performance web experiences.
+        </p>
+
+        <section class="skills-carousel" aria-label="My Skills Carousel">
+            <button class="carousel-btn" id="skill-prev" type="button" aria-label="Previous skill">‹</button>
+            <article class="skill-box" id="skill-card" tabindex="0">
+                <div class="skill-content">
+                    <span class="skill-label">Skill</span>
+                    <h2 class="skill-title" id="skill-title">React JS</h2>
+                    <p class="skill-text" id="skill-text">React JS lets me build fluid, dynamic interfaces where every interaction feels instant, modern, and conversion-focused.</p>
+                </div>
+            </article>
+            <button class="carousel-btn" id="skill-next" type="button" aria-label="Next skill">›</button>
+            <aside class="case-study-popup" id="case-popup" aria-live="polite">
+                <div class="case-heading">Case Study Diagram</div>
+                <div class="case-diagram">
+                    <svg viewBox="0 0 420 200" aria-hidden="true">
+                        <path class="glow-link" d="M86 54 C 140 54, 150 86, 198 102"></path>
+                        <path class="glow-link" d="M224 106 C 272 124, 288 150, 336 156"></path>
+                    </svg>
+                    <div class="node challenge">
+                        <small>Challenge</small>
+                        <p id="case-challenge"></p>
+                    </div>
+                    <div class="node strategy">
+                        <small>Execution</small>
+                        <p id="case-strategy"></p>
+                    </div>
+                    <div class="node solution">
+                        <small>Solution</small>
+                        <p id="case-solution"></p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <div class="actions">
+            <a class="btn btn-primary" href="1_main.html">Back To Home</a>
+            <a class="btn btn-secondary" href="experience.html">View Experience</a>
+        </div>
+    </main>
+
+    <script>
+        const skills = [
+            {
+                title: 'React JS',
+                description: 'React JS lets me build fluid, dynamic interfaces where every interaction feels instant, modern, and conversion-focused.',
+                caseStudy: {
+                    challenge: 'Legacy UI lagged during filter-heavy dashboards.',
+                    strategy: 'Component splitting + memoized state orchestration.',
+                    solution: 'Sub-100ms interactions and higher session depth.'
+                }
+            },
+            {
+                title: 'Tailwind',
+                description: 'Tailwind helps me ship pixel-perfect layouts rapidly, so your product keeps a consistent premium design without slowing development.',
+                caseStudy: {
+                    challenge: 'Inconsistent styles across 35+ app screens.',
+                    strategy: 'Token-driven utility patterns and reusable UI blocks.',
+                    solution: 'Unified visual language with faster releases.'
+                }
+            },
+            {
+                title: 'Node JS',
+                description: 'Node JS powers robust, hyper-scalable backends for your app, handling real-time traffic, APIs, and growth without performance bottlenecks.',
+                caseStudy: {
+                    challenge: 'Traffic spikes caused API slowdowns at peak hours.',
+                    strategy: 'Event-driven services with queue-backed async jobs.',
+                    solution: 'Stable throughput under 8x load with low latency.'
+                }
+            },
+            {
+                title: 'PHP',
+                description: 'PHP enables secure, business-ready server logic that integrates smoothly with databases and keeps mission-critical features reliable.',
+                caseStudy: {
+                    challenge: 'Manual business workflows delayed customer onboarding.',
+                    strategy: 'Custom PHP modules for automation and validation.',
+                    solution: 'Onboarding time reduced by over 50%.'
+                }
+            },
+            {
+                title: 'Performance Tuning',
+                description: 'Performance tuning maximizes speed, Core Web Vitals, and responsiveness, giving users a frictionless experience that improves retention.',
+                caseStudy: {
+                    challenge: 'High bounce rates from slow, asset-heavy pages.',
+                    strategy: 'Critical-path optimization, caching, and lazy loading.',
+                    solution: 'Core Web Vitals passed and conversion rate improved.'
+                }
+            }
+        ];
+
+        const skillCard = document.getElementById('skill-card');
+        const skillTitle = document.getElementById('skill-title');
+        const skillText = document.getElementById('skill-text');
+        const prevBtn = document.getElementById('skill-prev');
+        const nextBtn = document.getElementById('skill-next');
+        const casePopup = document.getElementById('case-popup');
+        const caseChallenge = document.getElementById('case-challenge');
+        const caseStrategy = document.getElementById('case-strategy');
+        const caseSolution = document.getElementById('case-solution');
+
+        let currentIndex = 0;
+        let touchStartX = 0;
+
+        function setCaseStudy(skill) {
+            caseChallenge.textContent = skill.caseStudy.challenge;
+            caseStrategy.textContent = skill.caseStudy.strategy;
+            caseSolution.textContent = skill.caseStudy.solution;
+        }
+
+        function showCasePopup() {
+            casePopup.classList.add('show');
+        }
+
+        function hideCasePopup() {
+            casePopup.classList.remove('show');
+        }
+
+        function renderSkill(nextIndex, direction = 1) {
+            if (nextIndex === currentIndex) return;
+
+            const nextSkill = skills[nextIndex];
+            const content = skillCard.querySelector('.skill-content');
+            const leaveX = direction > 0 ? -26 : 26;
+            const enterX = direction > 0 ? 26 : -26;
+            skillCard.classList.add('is-transitioning');
+            skillCard.animate(
+                [
+                    { transform: 'perspective(900px) rotateY(0deg) scale(1)', filter: 'brightness(1)' },
+                    { transform: `perspective(900px) rotateY(${direction > 0 ? -9 : 9}deg) scale(1.01)`, filter: 'brightness(1.15)' },
+                    { transform: 'perspective(900px) rotateY(0deg) scale(1)', filter: 'brightness(1)' }
+                ],
+                { duration: 680, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' }
+            );
+
+            content.animate(
+                [
+                    { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' },
+                    { opacity: 0, transform: `translate3d(${leaveX}px, -12px, 0) scale(0.96)` }
+                ],
+                { duration: 240, easing: 'ease-out', fill: 'forwards' }
+            ).onfinish = () => {
+                currentIndex = nextIndex;
+                skillTitle.textContent = nextSkill.title;
+                skillText.textContent = nextSkill.description;
+                setCaseStudy(nextSkill);
+
+                content.animate(
+                    [
+                        { opacity: 0, transform: `translate3d(${enterX}px, 16px, 0) scale(0.95)` },
+                        { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' }
+                    ],
+                    { duration: 520, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+                );
+
+                setTimeout(() => {
+                    skillCard.classList.remove('is-transitioning');
+                }, 540);
+            };
+        }
+
+        function goNext() {
+            renderSkill((currentIndex + 1) % skills.length, 1);
+        }
+
+        function goPrev() {
+            renderSkill((currentIndex - 1 + skills.length) % skills.length, -1);
+        }
+
+        prevBtn.addEventListener('click', goPrev);
+        nextBtn.addEventListener('click', goNext);
+
+        skillCard.addEventListener('mouseenter', showCasePopup);
+        skillCard.addEventListener('mouseleave', hideCasePopup);
+        skillCard.addEventListener('focusin', showCasePopup);
+        skillCard.addEventListener('focusout', hideCasePopup);
+
+        skillCard.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') goPrev();
+            if (event.key === 'ArrowRight') goNext();
+        });
+
+        skillCard.addEventListener('touchstart', (event) => {
+            touchStartX = event.changedTouches[0].clientX;
+        }, { passive: true });
+
+        skillCard.addEventListener('touchend', (event) => {
+            const distance = event.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(distance) > 35) {
+                if (distance > 0) goPrev();
+                else goNext();
+            }
+        }, { passive: true });
+
+        setCaseStudy(skills[currentIndex]);
+    </script>
+</body>
+</html>

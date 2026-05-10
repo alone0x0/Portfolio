@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AloneSaru - My Work</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 12% 15%, rgba(139, 88, 255, 0.24), transparent 36%),
+                radial-gradient(circle at 88% 12%, rgba(84, 255, 161, 0.15), transparent 30%),
+                linear-gradient(145deg, #090316 0%, #180634 44%, #0c031b 100%);
+            color: #eef3ff;
+            min-height: 100vh;
+            padding: 1.1rem;
+        }
+        .page {
+            width: min(1180px, 100%);
+            margin: 0 auto;
+            border-radius: 24px;
+            border: 1px solid rgba(169, 128, 255, 0.34);
+            background: rgba(11, 5, 27, 0.86);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.58);
+            padding: 1.2rem;
+        }
+        .title {
+            font-size: clamp(1.6rem, 4vw, 2.3rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #d8b8ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.35rem;
+        }
+        .subtitle {
+            color: #cfd9ee;
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .clock-box {
+            border-radius: 999px;
+            border: 1px solid rgba(141, 255, 194, 0.45);
+            background: rgba(9, 45, 30, 0.55);
+            color: #9effcc;
+            font-family: Consolas, "Courier New", monospace;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 0.45rem 0.9rem;
+            min-width: 170px;
+            text-align: center;
+            box-shadow: 0 0 16px rgba(99, 255, 180, 0.22);
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 0.95fr 1.05fr;
+            gap: 1rem;
+        }
+        .panel {
+            border: 1px solid rgba(162, 121, 255, 0.3);
+            background: rgba(13, 6, 31, 0.9);
+            border-radius: 16px;
+            padding: 0.9rem;
+        }
+        .panel h2 {
+            font-size: 1.05rem;
+            margin-bottom: 0.7rem;
+            color: #9affce;
+        }
+        .cursor-note {
+            color: #d5e3ff;
+            font-size: 0.86rem;
+            margin-bottom: 0.6rem;
+        }
+        .preview {
+            position: relative;
+            height: 180px;
+            border-radius: 12px;
+            border: 1px solid rgba(157, 123, 252, 0.4);
+            background: linear-gradient(160deg, rgba(22, 11, 51, 0.95), rgba(10, 4, 23, 0.98));
+            overflow: hidden;
+            margin-bottom: 0.7rem;
+        }
+        .ghost-cursor {
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #83ffc2; position: absolute; left: 18%; top: 35%;
+            box-shadow: 0 0 16px rgba(131, 255, 194, 0.75);
+            transition: transform 0.8s ease;
+        }
+        .note {
+            position: absolute;
+            font-size: 0.72rem;
+            background: rgba(17, 63, 46, 0.85);
+            color: #a1ffd3;
+            border: 1px solid rgba(93, 255, 173, 0.42);
+            border-radius: 8px;
+            padding: 0.35rem 0.5rem;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .note.show { opacity: 1; }
+        .project-list-wrap {
+            border-radius: 12px;
+            border: 1px solid rgba(157, 123, 252, 0.4);
+            background: rgba(9, 4, 22, 0.95);
+            padding: 0.5rem;
+            max-height: 430px;
+            overflow: auto;
+        }
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        .project-card {
+            border: 1px solid rgba(151, 117, 246, 0.46);
+            background: linear-gradient(145deg, rgba(35, 15, 72, 0.9), rgba(18, 7, 39, 0.96));
+            color: #eef3ff;
+            border-radius: 11px;
+            padding: 0.58rem 0.65rem;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(94, 255, 170, 0.72);
+            box-shadow: 0 0 16px rgba(102, 255, 177, 0.2);
+        }
+        .project-card b {
+            display: block;
+            font-size: 0.87rem;
+            margin-bottom: 0.2rem;
+            color: #b5ffd7;
+        }
+        .project-card span {
+            font-size: 0.74rem;
+            color: #cfdbf8;
+            line-height: 1.35;
+        }
+        .project-viewer {
+            margin-top: 0.72rem;
+            border-radius: 11px;
+            border: 1px solid rgba(151, 117, 246, 0.46);
+            background: rgba(8, 4, 21, 0.95);
+            min-height: 92px;
+            padding: 0.6rem;
+            font-size: 0.8rem;
+            color: #d8e4ff;
+            line-height: 1.5;
+        }
+        .project-viewer b { color: #96ffca; display: block; margin-bottom: 0.25rem; }
+        .runtime-area {
+            margin-top: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid rgba(151, 117, 246, 0.46);
+            background: rgba(8, 4, 21, 0.95);
+            min-height: 120px;
+            padding: 0.7rem;
+            display: none;
+        }
+        .runtime-area.show { display: block; }
+        .runtime-title {
+            color: #92ffcb;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .runtime-box {
+            border: 1px solid rgba(157, 123, 252, 0.4);
+            border-radius: 10px;
+            background: rgba(13, 7, 30, 0.96);
+            padding: 0.6rem;
+            color: #dde7ff;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+        .runtime-box input, .runtime-box select, .runtime-box textarea, .runtime-box button {
+            border-radius: 8px;
+            border: 1px solid rgba(151, 117, 246, 0.46);
+            background: rgba(9, 4, 21, 0.95);
+            color: #eef4ff;
+            padding: 0.35rem 0.45rem;
+            font-size: 0.8rem;
+        }
+        .runtime-box input, .runtime-box select, .runtime-box textarea {
+            min-width: 170px;
+            flex: 1 1 180px;
+        }
+        .runtime-box button {
+            cursor: pointer;
+            background: linear-gradient(135deg, #35ff9e, #93ffc5);
+            color: #062516;
+            font-weight: 700;
+            border: none;
+        }
+        .mini-row { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+        .mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.4rem; }
+        .mini-card {
+            border: 1px solid rgba(151, 117, 246, 0.46);
+            border-radius: 8px;
+            background: rgba(29, 12, 58, 0.86);
+            padding: 0.45rem;
+        }
+        .scroll-cards { display: flex; gap: 0.4rem; overflow: auto; }
+        .scroll-cards .mini-card { min-width: 120px; }
+        .slider {
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(114, 86, 200, 0.5);
+            outline: none;
+        }
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #85ffc3;
+            cursor: pointer;
+        }
+        .actions { margin-top: 0.85rem; }
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            border-radius: 999px;
+            padding: 0.75rem 1.15rem;
+            font-weight: 700;
+            color: #0a0615;
+            background: linear-gradient(135deg, #ffcc00, #ffed4e);
+        }
+        @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+        @media (max-width: 620px) {
+            body { padding: 0.6rem; }
+            .page { padding: 0.8rem; border-radius: 16px; }
+            .panel { padding: 0.7rem; border-radius: 12px; }
+            .title { font-size: clamp(1.35rem, 7.2vw, 1.8rem); }
+            .subtitle { font-size: 0.9rem; }
+            .top-bar { align-items: flex-start; }
+            .clock-box { width: 100%; text-align: left; border-radius: 12px; min-width: 0; font-size: 0.78rem; }
+            .preview { height: 155px; }
+            .note { font-size: 0.66rem; max-width: 44vw; }
+            .project-list-wrap { max-height: 320px; }
+            .runtime-area { padding: 0.55rem; }
+            .runtime-box { padding: 0.5rem; font-size: 0.76rem; }
+            .mini-row { gap: 0.35rem; }
+            .mini-row button { flex: 1 1 110px; }
+            .runtime-box input, .runtime-box select, .runtime-box textarea { min-width: 0; width: 100%; flex-basis: 100%; }
+            .actions { margin-top: 0.7rem; }
+            .back-btn { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <div class="top-bar">
+            <div>
+                <h1 class="title">My Work</h1>
+                <p class="subtitle">Interactive portfolio zone with real-time collaboration style preview and clickable project showcase.</p>
+            </div>
+            <div class="clock-box" id="live-clock">--:--:--</div>
+        </div>
+
+        <section class="layout">
+            <div class="panel">
+                <h2>Collaborative Cursor Demo</h2>
+                <p class="cursor-note">Simulates live feedback with motion-driven notes so visitors feel project collaboration in action.</p>
+                <div class="preview" id="preview">
+                    <div class="ghost-cursor" id="ghost-cursor"></div>
+                    <div class="note" id="note-1" style="left:8%;top:16%;">Can we make this hero more cinematic?</div>
+                    <div class="note" id="note-2" style="right:7%;top:44%;">Nice. This card hover feels premium.</div>
+                    <div class="note" id="note-3" style="left:30%;bottom:14%;">Perfect. Ready for launch after QA.</div>
+                </div>
+                <div class="project-viewer" id="collab-status">
+                    <b>Live Session Feed</b>
+                    Visitor is reviewing layout interactions in real time...
+                </div>
+                <div class="runtime-area" id="runtime-area">
+                    <div class="runtime-title" id="runtime-title">Project Runtime</div>
+                    <div class="runtime-box" id="runtime-box"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Clickable Project Showcase</h2>
+                <div class="project-list-wrap">
+                    <div class="project-grid" id="project-grid">
+                        <button class="project-card" data-project="Weather App"><b>Weather App</b><span>Live weather dashboard with clean interaction patterns and device-first layout.</span></button>
+                        <button class="project-card" data-project="To-Do App"><b>To-Do App</b><span>Task productivity interface with polished micro-interactions and intuitive flow.</span></button>
+                        <button class="project-card" data-project="AI Resume Analyzer"><b>AI Resume Analyzer</b><span>Smart resume scoring and insights engine for job-readiness optimization.</span></button>
+                        <button class="project-card" data-project="Smart Study Planner"><b>Smart Study Planner</b><span>Adaptive planner with priority logic and focus-cycle recommendation.</span></button>
+                        <button class="project-card" data-project="Cyberpunk Dashboard Design"><b>Cyberpunk Dashboard Design</b><span>Futuristic command-center interface balancing aesthetics and readability.</span></button>
+                        <button class="project-card" data-project="Movie Recommendation App"><b>Movie Recommendation App</b><span>Recommendation experience with personalized discovery and clean browsing UX.</span></button>
+                        <button class="project-card" data-project="Gaming Tournament Website"><b>Gaming Tournament Website</b><span>Competitive event platform with schedule, brackets, and hype visuals.</span></button>
+                        <button class="project-card" data-project="Futuristic Weather Interface"><b>Futuristic Weather Interface</b><span>Cinematic weather storytelling with ambient visual cues and motion.</span></button>
+                    </div>
+                </div>
+                <div class="project-viewer" id="project-viewer">
+                    <b>Project Preview</b>
+                    Click any project card to open a focused summary and quick action.
+                </div>
+            </div>
+        </section>
+
+        <div class="actions">
+            <a class="back-btn" href="1_main.html">Back To Home</a>
+        </div>
+    </main>
+
+    <script>
+        const liveClock = document.getElementById('live-clock');
+        function updateClock() {
+            const now = new Date();
+            liveClock.textContent = now.toLocaleTimeString([], { hour12: false }) + "  |  " + now.toLocaleDateString();
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        const ghostCursor = document.getElementById('ghost-cursor');
+        const note1 = document.getElementById('note-1');
+        const note2 = document.getElementById('note-2');
+        const note3 = document.getElementById('note-3');
+        const collabStatus = document.getElementById('collab-status');
+        const preview = document.getElementById('preview');
+        const positions = [
+            { xPct: 8, yPct: 12, note: note1, status: "Client requested stronger cinematic hero mood." },
+            { xPct: 42, yPct: 38, note: null, status: "Applying polish pass on interaction timing..." },
+            { xPct: 73, yPct: 60, note: note2, status: "Hover micro-interaction approved by client." },
+            { xPct: 29, yPct: 72, note: note3, status: "Final QA done, ready for deployment handoff." }
+        ];
+        let posIdx = 0;
+        setInterval(() => {
+            posIdx = (posIdx + 1) % positions.length;
+            const pos = positions[posIdx];
+            const maxX = preview.clientWidth - 26;
+            const maxY = preview.clientHeight - 26;
+            const x = Math.max(0, Math.min(maxX, (pos.xPct / 100) * preview.clientWidth));
+            const y = Math.max(0, Math.min(maxY, (pos.yPct / 100) * preview.clientHeight));
+            ghostCursor.style.transform = `translate(${x}px, ${y}px)`;
+            note1.classList.remove('show');
+            note2.classList.remove('show');
+            note3.classList.remove('show');
+            if (pos.note) pos.note.classList.add('show');
+            collabStatus.innerHTML = `<b>Live Session Feed</b>${pos.status}`;
+        }, 1100);
+
+        const viewer = document.getElementById('project-viewer');
+        const runtimeArea = document.getElementById('runtime-area');
+        const runtimeTitle = document.getElementById('runtime-title');
+        const runtimeBox = document.getElementById('runtime-box');
+
+        function setRuntime(project) {
+            const previousTimer = Number(runtimeBox.dataset.timer || 0);
+            if (previousTimer) {
+                clearInterval(previousTimer);
+                runtimeBox.dataset.timer = "";
+            }
+            runtimeArea.classList.add('show');
+            runtimeTitle.textContent = project;
+            const safeId = project.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+            if (project === "Weather App" || project === "Futuristic Weather Interface") {
+                runtimeBox.innerHTML = `<div class="mini-row"><input id="${safeId}-city" placeholder="Enter city"><button id="${safeId}-run">Check</button></div><div id="${safeId}-out">Weather preview ready.</div>`;
+                document.getElementById(`${safeId}-run`).onclick = async () => {
+                    const city = (document.getElementById(`${safeId}-city`).value || "Dhaka").trim();
+                    const out = document.getElementById(`${safeId}-out`);
+                    out.textContent = "Loading live weather...";
+                    try {
+                        const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`);
+                        const geoData = await geo.json();
+                        if (!geoData.results || !geoData.results.length) {
+                            out.textContent = "City not found. Try another location.";
+                            return;
+                        }
+                        const loc = geoData.results[0];
+                        const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,wind_speed_10m,relative_humidity_2m,weather_code&timezone=auto`);
+                        const weatherData = await weather.json();
+                        const c = weatherData.current;
+                        out.textContent = `${loc.name}, ${loc.country}: ${c.temperature_2m}°C | Wind ${c.wind_speed_10m} km/h | Humidity ${c.relative_humidity_2m}% | Code ${c.weather_code}`;
+                    } catch (err) {
+                        out.textContent = "Could not load live weather right now.";
+                    }
+                };
+            } else if (project === "To-Do App" || project === "Smart Study Planner") {
+                runtimeBox.innerHTML = `<div class="mini-row"><input id="${safeId}-task" placeholder="Add task"><button id="${safeId}-add">Add</button></div><div id="${safeId}-list" class="mini-grid"></div>`;
+                const key = `portfolio-${safeId}-tasks`;
+                let tasks = JSON.parse(localStorage.getItem(key) || '[]');
+                const list = document.getElementById(`${safeId}-list`);
+                function renderTasks() {
+                    list.innerHTML = '';
+                    tasks.forEach((task, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'mini-card';
+                        card.innerHTML = `<div style="margin-bottom:.35rem;">${task.done ? "✅" : "•"} ${task.text}</div>
+                            <div class="mini-row">
+                                <button data-act="done" data-i="${index}">${task.done ? "Undo" : "Done"}</button>
+                                <button data-act="edit" data-i="${index}">Edit</button>
+                                <button data-act="del" data-i="${index}">Delete</button>
+                            </div>`;
+                        list.appendChild(card);
+                    });
+                    localStorage.setItem(key, JSON.stringify(tasks));
+                    list.querySelectorAll('button[data-act]').forEach((btn) => {
+                        btn.onclick = () => {
+                            const i = Number(btn.dataset.i);
+                            const act = btn.dataset.act;
+                            if (act === 'done') tasks[i].done = !tasks[i].done;
+                            if (act === 'edit') {
+                                const next = prompt("Edit task", tasks[i].text);
+                                if (next !== null && next.trim()) tasks[i].text = next.trim();
+                            }
+                            if (act === 'del') tasks.splice(i, 1);
+                            renderTasks();
+                        };
+                    });
+                }
+                document.getElementById(`${safeId}-add`).onclick = () => {
+                    const input = document.getElementById(`${safeId}-task`);
+                    const t = input.value.trim();
+                    if (!t) return;
+                    tasks.push({ text: t, done: false });
+                    input.value = '';
+                    renderTasks();
+                };
+                renderTasks();
+            } else if (project === "AI Resume Analyzer") {
+                runtimeBox.innerHTML = `<textarea id="resume-text" rows="4" style="width:100%;" placeholder="Paste resume text..."></textarea><div class="mini-row"><button id="score-btn">Analyze</button><div id="score-out">Score: --</div></div>`;
+                document.getElementById('score-btn').onclick = () => {
+                    const text = document.getElementById('resume-text').value.toLowerCase();
+                    const must = ["experience","project","skills","education"];
+                    const tech = ["react","node","python","sql","api","javascript","php","tailwind"];
+                    const scoreMust = must.reduce((s,k)=> s + (text.includes(k) ? 12 : 0), 0);
+                    const scoreTech = Math.min(40, tech.reduce((s,k)=> s + (text.includes(k) ? 6 : 0), 0));
+                    const lengthScore = Math.min(12, Math.floor(text.length / 120));
+                    const total = Math.min(100, scoreMust + scoreTech + lengthScore);
+                    document.getElementById('score-out').textContent = `Score: ${total}/100`;
+                };
+            } else if (project === "Movie Recommendation App") {
+                runtimeBox.innerHTML = `<div class="mini-row"><select id="movie-genre"><option value="action-adventure">Action</option><option value="animation">Animation</option><option value="comedy">Comedy</option><option value="drama">Drama</option></select><button id="movie-go">Recommend</button></div><div id="movie-list">Choose a genre and fetch titles.</div>`;
+                document.getElementById('movie-go').onclick = async () => {
+                    const g = document.getElementById('movie-genre').value;
+                    const out = document.getElementById('movie-list');
+                    out.textContent = "Loading movies...";
+                    try {
+                        const res = await fetch(`https://api.sampleapis.com/movies/${g}`);
+                        const data = await res.json();
+                        const top = data.slice(0, 5).map((m) => m.title || m.movie || "Untitled");
+                        out.textContent = `Top picks: ${top.join(" | ")}`;
+                    } catch (e) {
+                        out.textContent = "Unable to load recommendations right now.";
+                    }
+                };
+            } else if (project === "Gaming Tournament Website") {
+                runtimeBox.innerHTML = `<div class="mini-row"><input id="team-input" placeholder="Add team"><button id="team-add">Add Team</button><button id="bracket-btn">Build Bracket</button></div><div id="bracket-out" class="mini-grid"></div>`;
+                const teams = [];
+                document.getElementById('team-add').onclick = () => {
+                    const input = document.getElementById('team-input');
+                    const name = input.value.trim();
+                    if (!name) return;
+                    teams.push(name);
+                    input.value = '';
+                    document.getElementById('bracket-out').innerHTML = teams.map(t => `<div class="mini-card">${t}</div>`).join('');
+                };
+                document.getElementById('bracket-btn').onclick = () => {
+                    if (teams.length < 2) {
+                        document.getElementById('bracket-out').innerHTML = `<div class="mini-card">Add at least 2 teams.</div>`;
+                        return;
+                    }
+                    const matchups = [];
+                    for (let i = 0; i < teams.length; i += 2) {
+                        matchups.push(`${teams[i]} vs ${teams[i + 1] || "BYE"}`);
+                    }
+                    document.getElementById('bracket-out').innerHTML = matchups.map(m=>`<div class="mini-card">${m}</div>`).join('') + `<div class="mini-card">Final: Winner of round</div>`;
+                };
+            } else if (project === "Cyberpunk Dashboard Design") {
+                runtimeBox.innerHTML = `<div class="mini-grid"><div class="mini-card">CPU: <b id="cpu-v">--</b></div><div class="mini-card">Memory: <b id="mem-v">--</b></div><div class="mini-card">Network: <b id="net-v">--</b></div></div>`;
+                const updateStats = () => {
+                    document.getElementById('cpu-v').textContent = `${Math.floor(38 + Math.random() * 40)}%`;
+                    document.getElementById('mem-v').textContent = `${Math.floor(46 + Math.random() * 38)}%`;
+                    document.getElementById('net-v').textContent = `${Math.floor(90 + Math.random() * 40)}ms`;
+                };
+                updateStats();
+                const timer = setInterval(updateStats, 1300);
+                runtimeBox.dataset.timer = String(timer);
+            } else {
+                runtimeBox.innerHTML = `<div class="mini-card">Interactive prototype for ${project} is ready to be expanded.</div>`;
+            }
+        }
+
+        document.querySelectorAll('.project-card').forEach((card) => {
+            card.addEventListener('click', () => {
+                const project = card.dataset.project;
+                const desc = card.querySelector('span').textContent;
+                viewer.innerHTML =
+                    `<b>${project}</b>` +
+                    `${desc}<br>` +
+                    `Action: Opened in the runtime area below the live session feed.`;
+                setRuntime(project);
+            });
+        });
+    </script>
+</body>
+</html>
